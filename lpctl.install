@@ -5,7 +5,7 @@
 
 ## arg 1:  the new package version
 post_install() {
-	 /usr/bin/systemctl enable --now charge_limit.path
+	/usr/bin/systemctl enable --now charge_limit.path
      /usr/bin/systemctl enable --now charge_limit.service
      /usr/bin/systemctl enable --now fan_profile.path
      /usr/bin/systemctl enable --now fan_profile.service
