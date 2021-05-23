@@ -1,7 +1,7 @@
 # lpctl
-Commandline utility to set battery charge threshold and fan profile in Asus laptops having support for asus-nb-wmi.
-Usage: lpctl [OPTION] [ARGUMENT]
-[OPTIONS]      
+Commandline utility to set battery charge threshold and fan profile in Asus laptops having support for asus-nb-wmi.<br />
+Usage: lpctl [OPTION] [ARGUMENT]<br />
+[OPTIONS]<br />      
 			-c for setting battery charge limit threshold.<br />
 			Argument: Required battery charge limit in range of [1-100].<br />
 			eg: lpctl -c 60 ; sets battery charge limit to 60%.<br />
