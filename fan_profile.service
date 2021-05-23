@@ -1,0 +1,10 @@
+[Unit]
+Description=Set the fan profile
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'cat /etc/fan_profile > /sys/devices/platform/asus-nb-wmi/throttle_thermal_policy'
+
+[Install]
+WantedBy=multi-user.target

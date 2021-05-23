@@ -1,0 +1,5 @@
+[Path]
+PathModified=/etc/fan_profile
+
+[Install]
+WantedBy=multi-user.target

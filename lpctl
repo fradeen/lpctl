@@ -1,0 +1,89 @@
+#!/bin/sh
+#Function to set charge limit by setting value in /etc/charge_limit file.
+#Change in this file triggers the charge_limit.path systemd service shipped with the utility for setting up battery charge threshold.
+charge_limit () {
+	#echo "function";
+	re='^[0-9]+$';
+	num=$1;
+	if [[ $1 =~ $re ]]; #check if given argument is number or not.
+	then
+		isInRange="$(("$(($1 >= 1))" && "$(($1<=100))"))"; # value 1 if argument is in range 1-100 else 0.
+		if (( $isInRange )) ;
+		then
+			echo "Setting charge level to $1%.";
+			echo "$1" > /etc/charge_limit; # setting charge threshold value in /etc/charge_limit.
+		else
+			echo "out of range [1 - 100]";
+			exit 1;
+		fi
+	else
+		echo "Not number!";
+		exit 1;
+	fi
+}
+#Function to switch between three predefined fan profiles by setting value in /etc/fan_profile file.
+#Change in this file trigggers the fan_profile.path systemd service shipped with the utility for switching between fan profiles.
+fan_profile () {
+	x=0;
+case "$1" in
+        s | silent) x=2
+        echo "Setting fan mode to Silent."
+        ;;
+        t | turbo) x=1
+        echo "Setting fan mode to Turbo."
+        ;;
+        b | balanced) x=0
+        echo "Setting fan mode to Balanced."
+        ;;
+        *) echo "Specified mode doesn't exists."
+        exit 1
+        ;;
+esac
+echo "$x" > /etc/fan_profile ;
+}
+#Function to check if root access is provided or not.
+check_root(){
+	if [ "$(id -u)" != "0" ]; then
+   echo "This option requires root access.";
+   exit 1
+fi
+}
+#check arguments are passed or not.
+if [ $# -eq 0 ]; then
+    echo "No arguments provided";
+    exit 1;
+fi
+
+while getopts ":c:f:h" opt; do
+	case $opt in
+		c)
+			check_root;
+			charge_limit "$OPTARG" ;
+			;;
+		f)
+			check_root;
+			fan_profile "$OPTARG";
+			;;
+		h)
+			echo -en "lpctl : Commandline utility to set battery charge threshold and fan profile in Asus laptops having support for asus-nb-wmi.\n";
+			echo -e "Usage: lpctl [OPTION] [ARGUMENT]";
+			echo -e "-c \t for setting battery charge limit threshold.
+			Argument:\tRequired battery charge limit in range of [1-100].
+			eg: lpctl -c 60 ; sets battery charge limit to 60%.";
+			echo -e "-f \t for switching between predefined fan profiles provided by asus firmware.
+			Arguments:
+			\tb,balanced\tfor balenced profile.
+			\tt,turbo\tfor turbo profile.
+			\ts,silent\tfor silent profile.
+			eg: lpctl -f b ; sets fan profile to balanced."
+			;;
+		\?)
+			echo "Invalid option: -$OPTARG"
+			exit 1
+			;;
+		:)
+			echo "Option -$OPTARG requires an argument.Use -h to know about options."
+			exit 1
+			;;
+	esac
+done
